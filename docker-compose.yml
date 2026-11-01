@@ -1,0 +1,9 @@
+services:
+  yt2wa:
+    build: .
+    image: yt2wa
+    env_file:
+      - path: .env
+        required: false
+    volumes:
+      - ./out:/out

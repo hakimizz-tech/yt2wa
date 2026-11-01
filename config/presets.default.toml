@@ -1,0 +1,40 @@
+# Compatibility profiles. These values mirror the built-in defaults.
+# Copy this file and point YT2WA_PROFILE_FILE at it to change them.
+# Keys you leave out keep their built-in value. The "status" profile
+# starts from the "chat" profile.
+
+[chat]
+max_long_edge = 1920
+max_short_edge = 1080
+max_fps = 30.0
+max_h264_level = 40
+allowed_h264_profiles = ["Baseline", "Constrained Baseline", "Main", "High"]
+audio_bitrate_k = 128
+sample_rates = [44100, 48000]
+default_sample_rate = 48000
+crf = 23
+preset = "medium"
+# WhatsApp limits change over time. Verify before relying on this value.
+size_cap_mb = 16
+floor_resolution = 360
+
+[chat.min_video_bitrate_k]
+144 = 60
+240 = 120
+360 = 250
+480 = 400
+720 = 800
+1080 = 1500
+
+[chat.max_video_bitrate_k]
+144 = 200
+240 = 400
+360 = 800
+480 = 1400
+720 = 2800
+1080 = 5500
+
+[status]
+# 9:16 is ideal for Status. Other shapes only trigger a warning.
+advisory_aspect = 0.5625
+advisory_max_duration_s = 60.0
