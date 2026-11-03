@@ -6,6 +6,7 @@ from yt2wa.domain.errors import UsageError
 from yt2wa.domain.models import (
     BEST_RESOLUTION,
     RESOLUTION_RUNGS,
+    AudioFormat,
     FormatChoice,
     Target,
 )
@@ -55,3 +56,16 @@ def build_format_selector(
         selector="bv*+ba/b",
         sort=(res_key, "vcodec:h264", "acodec:aac"),
     )
+
+
+def build_audio_format_selector(
+    audio_format: AudioFormat | None,
+) -> FormatChoice:
+    """Build the yt-dlp format choice for an audio download.
+
+    AAC (M4A) streams are preferred because they usually need no
+    re-encoding. Pass None for "keep the best stream as it is".
+    """
+    if audio_format is AudioFormat.MP3:
+        return FormatChoice("ba/b", ("abr", "acodec:aac"))
+    return FormatChoice("ba/b", ("acodec:aac", "abr"))

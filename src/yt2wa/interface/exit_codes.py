@@ -9,6 +9,7 @@ from yt2wa.domain.errors import (
     DependencyError,
     DomainError,
     NetworkError,
+    NotFoundError,
     SourceUnavailableError,
     TranscodeError,
     UnsupportedSourceError,
@@ -28,6 +29,7 @@ class ExitCode(IntEnum):
     DEPENDENCY = 6
     TRANSCODE = 7
     CONSTRAINT = 8
+    NOT_FOUND = 9
     INTERRUPTED = 130
 
 
@@ -39,6 +41,7 @@ _CODES: tuple[tuple[type[DomainError], ExitCode], ...] = (
     (DependencyError, ExitCode.DEPENDENCY),
     (TranscodeError, ExitCode.TRANSCODE),
     (ConstraintError, ExitCode.CONSTRAINT),
+    (NotFoundError, ExitCode.NOT_FOUND),
 )
 
 

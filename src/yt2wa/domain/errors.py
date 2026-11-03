@@ -78,3 +78,7 @@ class SizeCapError(ConstraintError):
 
 class NonCompliantOutputError(ConstraintError):
     """The finished file fails the compatibility checks."""
+
+
+class NotFoundError(DomainError):
+    """A search found nothing, or nothing we are confident about."""

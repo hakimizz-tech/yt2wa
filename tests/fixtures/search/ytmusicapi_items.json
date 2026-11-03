@@ -1,0 +1,83 @@
+[
+  {
+    "category": "Top result",
+    "resultType": "song",
+    "videoId": "aaaaaaaaaaa",
+    "title": "One More Time",
+    "artists": [
+      {
+        "name": "Daft Punk",
+        "id": "UC1"
+      }
+    ],
+    "album": {
+      "name": "Discovery",
+      "id": "MPRE1"
+    },
+    "duration": "5:20",
+    "duration_seconds": 320,
+    "videoType": "MUSIC_VIDEO_TYPE_ATV"
+  },
+  {
+    "resultType": "artist",
+    "artist": "Daft Punk",
+    "browseId": "UC1"
+  },
+  {
+    "resultType": "song",
+    "videoId": "bbbbbbbbbbb",
+    "title": "One More Time (Radio Edit)",
+    "artists": [
+      {
+        "name": "Daft Punk",
+        "id": "UC1"
+      }
+    ],
+    "album": null,
+    "duration": "3:52",
+    "videoType": "MUSIC_VIDEO_TYPE_ATV"
+  },
+  {
+    "resultType": "video",
+    "videoId": "ccccccccccc",
+    "title": "Daft Punk - One More Time (Official Video)",
+    "artists": [
+      {
+        "name": "Daft Punk"
+      }
+    ],
+    "views": "612M views",
+    "duration": "5:20",
+    "videoType": "MUSIC_VIDEO_TYPE_OMV"
+  },
+  {
+    "resultType": "video",
+    "videoId": "ddddddddddd",
+    "title": "one more time cover",
+    "artists": [
+      {
+        "name": "Some Fan"
+      }
+    ],
+    "views": "1,234 views",
+    "duration": "1:02:03",
+    "videoType": "MUSIC_VIDEO_TYPE_UGC"
+  },
+  {
+    "resultType": "song",
+    "videoId": "aaaaaaaaaaa",
+    "title": "One More Time",
+    "artists": [
+      {
+        "name": "Daft Punk"
+      }
+    ],
+    "duration": "5:20",
+    "videoType": "MUSIC_VIDEO_TYPE_ATV"
+  },
+  {
+    "resultType": "album",
+    "browseId": "MPRE1",
+    "title": "Discovery"
+  }
+]

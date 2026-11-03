@@ -5,10 +5,17 @@ from __future__ import annotations
 from dataclasses import dataclass
 from pathlib import Path
 
+from yt2wa.domain.audio_profile import AudioProfile
 from yt2wa.domain.models import (
+    AudioFormat,
     ComplianceReport,
+    ConversionResult,
+    MediaKind,
     Method,
     ProgressCallback,
+    SearchKind,
+    SearchProviderName,
+    SearchResult,
     SourceMetadata,
     SourceRef,
     StreamFacts,
@@ -28,6 +35,9 @@ class ConvertRequest:
     max_size_mb: int | None = None
     keep_source: bool = False
     dry_run: bool = False
+    media: MediaKind = MediaKind.VIDEO
+    audio_format: AudioFormat = AudioFormat.M4A
+    audio_bitrate_k: int | None = None
 
 
 @dataclass(frozen=True)
@@ -41,6 +51,7 @@ class JobContext:
     profile: CompatProfile
     size_cap_bytes: int | None
     on_progress: ProgressCallback
+    audio_profile: AudioProfile | None = None
 
 
 @dataclass(frozen=True)
@@ -71,3 +82,28 @@ class VerifyResult:
     target: Target
     facts: StreamFacts
     report: ComplianceReport
+    media: MediaKind = MediaKind.VIDEO
+
+
+@dataclass(frozen=True)
+class SearchRequest:
+    """What the user asked a search to do."""
+
+    query: str
+    kind: SearchKind = SearchKind.ANY
+    limit: int = 5
+    provider: SearchProviderName | None = None  # None means automatic.
+    detail: bool = False
+    min_confidence: float = 0.6
+    download: ConvertRequest | None = None
+    pick: int | None = None
+
+
+@dataclass(frozen=True)
+class SearchOutcome:
+    """Everything a search produced."""
+
+    result: SearchResult
+    detail: SourceMetadata | None = None
+    conversion: ConversionResult | None = None
+    notes: tuple[str, ...] = ()

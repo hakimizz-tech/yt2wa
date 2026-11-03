@@ -1,0 +1,174 @@
+[
+  {
+    "name": "original beats cover, live and a 10 hour loop",
+    "query": "daft punk one more time",
+    "kind": "music",
+    "expected_best": "aaaaaaaaaaa",
+    "candidates": [
+      {
+        "video_id": "bbbbbbbbbbb",
+        "title": "One More Time (Cover)",
+        "channel": "SomeGuy",
+        "duration_s": 200,
+        "view_count": 1000000,
+        "position": 0,
+        "origin": "user_upload",
+        "artists": []
+      },
+      {
+        "video_id": "aaaaaaaaaaa",
+        "title": "Daft Punk - One More Time (Official Video)",
+        "channel": "Daft Punk",
+        "duration_s": 320,
+        "view_count": 600000000,
+        "position": 1,
+        "origin": "official_video",
+        "artists": []
+      },
+      {
+        "video_id": "ccccccccccc",
+        "title": "Daft Punk - One More Time (Live at Coachella 2006)",
+        "channel": "FestivalClips",
+        "duration_s": 400,
+        "view_count": 5000000,
+        "position": 2,
+        "origin": "unknown",
+        "artists": []
+      },
+      {
+        "video_id": "ddddddddddd",
+        "title": "One More Time 10 HOURS",
+        "channel": "LoopKing",
+        "duration_s": 36000,
+        "view_count": 900000,
+        "position": 3,
+        "origin": "user_upload",
+        "artists": []
+      }
+    ]
+  },
+  {
+    "name": "official video beats a lyric video",
+    "query": "bohemian rhapsody queen",
+    "kind": "music",
+    "expected_best": "bbbbbbbbbbb",
+    "candidates": [
+      {
+        "video_id": "aaaaaaaaaaa",
+        "title": "Queen - Bohemian Rhapsody (Lyrics)",
+        "channel": "LyricsCo",
+        "duration_s": 360,
+        "view_count": 50000000,
+        "position": 0,
+        "origin": "unknown",
+        "artists": []
+      },
+      {
+        "video_id": "bbbbbbbbbbb",
+        "title": "Queen – Bohemian Rhapsody (Official Video Remastered)",
+        "channel": "Queen Official",
+        "duration_s": 359,
+        "view_count": 1600000000,
+        "position": 1,
+        "origin": "official_video",
+        "artists": []
+      },
+      {
+        "video_id": "ccccccccccc",
+        "title": "Bohemian Rhapsody 1 hour",
+        "channel": "Loops",
+        "duration_s": 3600,
+        "view_count": 2000000,
+        "position": 2,
+        "origin": "user_upload",
+        "artists": []
+      }
+    ]
+  },
+  {
+    "name": "artist found in the channel name",
+    "query": "adele hello",
+    "kind": "music",
+    "expected_best": "ddddddddddd",
+    "candidates": [
+      {
+        "video_id": "eeeeeeeeeee",
+        "title": "Lionel Richie - Hello",
+        "channel": "Lionel Richie",
+        "duration_s": 340,
+        "view_count": 400000000,
+        "position": 0,
+        "origin": "unknown",
+        "artists": []
+      },
+      {
+        "video_id": "ddddddddddd",
+        "title": "Hello",
+        "channel": "Adele",
+        "duration_s": 295,
+        "view_count": 800000000,
+        "position": 1,
+        "origin": "music_track",
+        "artists": [
+          "Adele"
+        ]
+      }
+    ]
+  },
+  {
+    "name": "words in the query are not penalised",
+    "query": "queen live aid 1985",
+    "kind": "video",
+    "expected_best": "aaaaaaaaaaa",
+    "candidates": [
+      {
+        "video_id": "bbbbbbbbbbb",
+        "title": "Queen - Bohemian Rhapsody",
+        "channel": "Queen Official",
+        "duration_s": 359,
+        "view_count": 1600000000,
+        "position": 0,
+        "origin": "official_video",
+        "artists": []
+      },
+      {
+        "video_id": "aaaaaaaaaaa",
+        "title": "Queen - Live Aid 1985 Full Set",
+        "channel": "Queen Official",
+        "duration_s": 1280,
+        "view_count": 90000000,
+        "position": 1,
+        "origin": "official_video",
+        "artists": []
+      }
+    ]
+  },
+  {
+    "name": "accents do not matter",
+    "query": "beyonce halo",
+    "kind": "music",
+    "expected_best": "aaaaaaaaaaa",
+    "candidates": [
+      {
+        "video_id": "bbbbbbbbbbb",
+        "title": "Halo - Beyonce cover by Jess",
+        "channel": "Jess",
+        "duration_s": 230,
+        "view_count": 10000,
+        "position": 0,
+        "origin": "user_upload",
+        "artists": []
+      },
+      {
+        "video_id": "aaaaaaaaaaa",
+        "title": "Beyoncé - Halo (Official Video)",
+        "channel": "Beyoncé",
+        "duration_s": 261,
+        "view_count": 900000000,
+        "position": 1,
+        "origin": "official_video",
+        "artists": []
+      }
+    ]
+  }
+]

@@ -1,0 +1,54 @@
+{
+  "_type": "playlist",
+  "entries": [
+    {
+      "_type": "url",
+      "ie_key": "Youtube",
+      "id": "aaaaaaaaaaa",
+      "title": "Daft Punk - One More Time (Official Video)",
+      "channel": "Daft Punk",
+      "uploader": "Daft Punk",
+      "duration": 320,
+      "view_count": 612000000
+    },
+    {
+      "_type": "url",
+      "ie_key": "Youtube",
+      "id": "bbbbbbbbbbb",
+      "title": "Daft Punk - One More Time (Lyrics)",
+      "uploader": "LyricsCo",
+      "duration": 322.0,
+      "view_count": 41000000
+    },
+    {
+      "_type": "url",
+      "ie_key": "YoutubeTab",
+      "id": "PLxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+      "title": "One More Time playlist",
+      "duration": null
+    },
+    {
+      "_type": "url",
+      "ie_key": "Youtube",
+      "id": "UCxxxxxxxxxxxxxxxxxxxxxx",
+      "title": "Daft Punk channel"
+    },
+    {
+      "_type": "url",
+      "ie_key": "Youtube",
+      "id": "aaaaaaaaaaa",
+      "title": "Daft Punk - One More Time (Official Video)",
+      "duration": 320
+    },
+    {
+      "_type": "url",
+      "ie_key": "Youtube",
+      "id": "ccccccccccc",
+      "title": "One More Time - Topic upload",
+      "channel": "Daft Punk - Topic",
+      "duration": 321,
+      "view_count": null
+    },
+    "not-a-dict"
+  ]
+}

@@ -4,14 +4,16 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "yt2wa"
-version = "0.1.0"
-description = "Download YouTube videos and convert them for WhatsApp."
+version = "0.3.0"
+description = "Download YouTube videos and audio, search for them, and convert them for WhatsApp."
 readme = "README.md"
 requires-python = ">=3.11"
 license = { text = "MIT" }
 dependencies = ["yt-dlp>=2024.8.6"]
 
 [project.optional-dependencies]
+# Best search results for music (see ADR-0013). Optional on purpose.
+music = ["ytmusicapi>=1.8,<2"]
 dev = [
     "pytest>=8.0",
     "hypothesis>=6.100",

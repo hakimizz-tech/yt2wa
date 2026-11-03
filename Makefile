@@ -1,7 +1,7 @@
 .PHONY: install test lint format type imports check docker clean
 
 install:
-	pip install -e ".[dev]"
+	pip install -e ".[dev,music]"
 
 test:
 	pytest

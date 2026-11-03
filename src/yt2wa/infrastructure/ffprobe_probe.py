@@ -38,6 +38,12 @@ def _optional_int(value: Any) -> int | None:
     return int(value) if value not in (None, "") else None
 
 
+def _kilobits(value: Any) -> int | None:
+    """Convert a bit rate in bits per second to kbit/s."""
+    number = _optional_int(value)
+    return None if number is None else number // 1000
+
+
 def parse_ffprobe_json(
     data: dict[str, Any], size_bytes: int, faststart: bool | None
 ) -> StreamFacts:
@@ -70,6 +76,7 @@ def parse_ffprobe_json(
         size_bytes=size_bytes,
         duration_s=float(fmt.get("duration") or video.get("duration") or 0),
         faststart=faststart,
+        abitrate_k=_kilobits(audio.get("bit_rate")),
     )
 
 

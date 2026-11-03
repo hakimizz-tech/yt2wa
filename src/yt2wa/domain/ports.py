@@ -9,6 +9,10 @@ from typing import Protocol
 from yt2wa.domain.models import (
     FormatChoice,
     ProgressCallback,
+    SearchCandidate,
+    SearchKind,
+    SearchProviderName,
+    SearchResponse,
     SourceMetadata,
     SourceRef,
     StreamFacts,
@@ -67,4 +71,28 @@ class Workspace(Protocol):
 
     def cleanup(self, job_dir: Path) -> None:
         """Delete a scratch folder."""
+        ...
+
+
+class SearchProvider(Protocol):
+    """One search method. It only finds candidates."""
+
+    def search(
+        self, query: str, kind: SearchKind, limit: int
+    ) -> list[SearchCandidate]:
+        """Return candidates in the order the service listed them."""
+        ...
+
+
+class SearchGateway(Protocol):
+    """Runs a search, possibly through several methods in turn."""
+
+    def search(
+        self,
+        query: str,
+        kind: SearchKind,
+        limit: int,
+        requested: SearchProviderName | None,
+    ) -> SearchResponse:
+        """Return candidates and how they were found."""
         ...

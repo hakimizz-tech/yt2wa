@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import logging
 from pathlib import Path
 from typing import Any
 
@@ -23,7 +24,29 @@ from yt2wa.domain.models import (
     SourceRef,
 )
 
+log = logging.getLogger(__name__)
+
 _COOKIE_HINT = "Provide a cookies file with YT2WA_COOKIES_FILE."
+
+
+class YtDlpLogger:
+    """Send yt-dlp messages to our logs instead of the terminal.
+
+    Errors are also raised as exceptions, which we translate, so showing
+    them twice would only add noise. Use -v to see them.
+    """
+
+    def debug(self, msg: str) -> None:
+        log.debug("yt-dlp: %s", msg)
+
+    def info(self, msg: str) -> None:
+        log.debug("yt-dlp: %s", msg)
+
+    def warning(self, msg: str) -> None:
+        log.debug("yt-dlp: %s", msg)
+
+    def error(self, msg: str) -> None:
+        log.debug("yt-dlp: %s", msg)
 
 
 def classify_download_error(message: str) -> DomainError:
@@ -101,11 +124,20 @@ class YtDlpDownloader:
                 info = ydl.extract_info(ref.url, download=False)
         except (yt_dlp.utils.YoutubeDLError, OSError) as exc:
             raise classify_download_error(str(exc)) from exc
+        artists = info.get("artists")
+        names = ", ".join(artists) if isinstance(artists, list) else ""
+        artist = info.get("artist") or names or None
         return SourceMetadata(
             video_id=str(info.get("id", ref.video_id or "")),
             title=str(info.get("title") or info.get("id") or "video"),
             duration_s=float(info.get("duration") or 0),
             uploader=info.get("uploader"),
+            artist=artist,
+            track=info.get("track"),
+            album=info.get("album"),
+            thumbnail_url=info.get("thumbnail"),
+            view_count=info.get("view_count"),
+            upload_date=info.get("upload_date"),
         )
 
     def download(
@@ -156,6 +188,7 @@ class YtDlpDownloader:
             "quiet": True,
             "no_warnings": True,
             "noprogress": True,
+            "logger": YtDlpLogger(),
             "noplaylist": True,
             "retries": self._retries,
             "fragment_retries": self._retries,

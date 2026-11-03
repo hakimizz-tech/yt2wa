@@ -13,7 +13,7 @@ WORKDIR /app
 COPY pyproject.toml README.md ./
 COPY src ./src
 COPY config ./config
-RUN pip install .
+RUN pip install ".[music]"
 
 RUN useradd --create-home app && mkdir /out && chown app /out
 USER app

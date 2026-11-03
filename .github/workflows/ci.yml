@@ -26,7 +26,7 @@ jobs:
       - name: Install ffmpeg (Windows)
         if: runner.os == 'Windows'
         run: choco install ffmpeg -y
-      - run: pip install -e ".[dev]"
+      - run: pip install -e ".[dev,music]"
       - run: ruff check .
       - run: mypy
       - run: lint-imports

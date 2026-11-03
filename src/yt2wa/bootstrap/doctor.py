@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import importlib.util
 import re
 import sys
 from dataclasses import dataclass
@@ -78,6 +79,17 @@ def _check_ytdlp() -> DoctorCheck:
     return DoctorCheck("yt-dlp", True, f"{__version__}, {age} days old{note}")
 
 
+def _check_ytmusicapi() -> DoctorCheck:
+    """Report the optional ytmusicapi package. Absent is not a failure."""
+    if importlib.util.find_spec("ytmusicapi") is None:
+        return DoctorCheck(
+            "ytmusicapi",
+            True,
+            'not installed (optional: pip install "yt2wa[music]")',
+        )
+    return DoctorCheck("ytmusicapi", True, "installed")
+
+
 def run_doctor(settings: Settings) -> list[DoctorCheck]:
     """Run every environment check."""
     return [
@@ -86,4 +98,5 @@ def run_doctor(settings: Settings) -> list[DoctorCheck]:
         _check_binary("ffprobe", settings.ffprobe_bin),
         _check_encoders(settings.ffmpeg_bin),
         _check_ytdlp(),
+        _check_ytmusicapi(),
     ]

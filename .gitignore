@@ -16,4 +16,5 @@ tests/fixtures/*.mp4
 tests/fixtures/*.webm
 tests/fixtures/*.mkv
 *.bak
-setup-yt2wa.sh
+*.sh
+*.v02.bak

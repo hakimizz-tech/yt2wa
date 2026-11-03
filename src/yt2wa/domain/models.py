@@ -30,6 +30,45 @@ class Target(StrEnum):
         return self is not Target.ORIGINAL
 
 
+class MediaKind(StrEnum):
+    """Whether the output holds video or only audio."""
+
+    VIDEO = "video"
+    AUDIO = "audio"
+
+
+class AudioFormat(StrEnum):
+    """Audio file formats we can produce for sharing."""
+
+    M4A = "m4a"
+    MP3 = "mp3"
+
+
+class SearchKind(StrEnum):
+    """What the user is searching for."""
+
+    ANY = "any"
+    VIDEO = "video"
+    MUSIC = "music"
+
+
+class SearchProviderName(StrEnum):
+    """The search methods we support."""
+
+    YTSEARCH = "ytsearch"
+    YTMUSIC_URL = "ytmusic-url"
+    YTMUSICAPI = "ytmusicapi"
+
+
+class CandidateOrigin(StrEnum):
+    """What kind of upload a search result is."""
+
+    MUSIC_TRACK = "music_track"
+    OFFICIAL_VIDEO = "official_video"
+    USER_UPLOAD = "user_upload"
+    UNKNOWN = "unknown"
+
+
 class SourceKind(StrEnum):
     """The kind of YouTube link we were given."""
 
@@ -70,6 +109,12 @@ class SourceMetadata:
     title: str
     duration_s: float
     uploader: str | None = None
+    artist: str | None = None
+    track: str | None = None
+    album: str | None = None
+    thumbnail_url: str | None = None
+    view_count: int | None = None
+    upload_date: str | None = None
 
 
 @dataclass(frozen=True)
@@ -100,6 +145,7 @@ class StreamFacts:
     size_bytes: int
     duration_s: float
     faststart: bool | None
+    abitrate_k: int | None = None
 
     @property
     def has_audio(self) -> bool:
@@ -221,6 +267,7 @@ class ConversionResult:
     report: ComplianceReport | None
     warnings: tuple[str, ...] = ()
     source_kept: Path | None = None
+    media: MediaKind = MediaKind.VIDEO
 
 
 @dataclass(frozen=True)
@@ -228,3 +275,62 @@ class DryRunPlan:
     """A description of what a run would do."""
 
     lines: tuple[str, ...]
+
+
+@dataclass(frozen=True)
+class SearchCandidate:
+    """One search hit, before ranking."""
+
+    video_id: str
+    url: str
+    title: str
+    channel: str
+    duration_s: float
+    view_count: int | None
+    position: int
+    origin: CandidateOrigin
+    provider: SearchProviderName
+    artists: tuple[str, ...] = ()
+    album: str | None = None
+
+
+@dataclass(frozen=True)
+class ScoredCandidate:
+    """A search hit with its score and the reasons for it."""
+
+    candidate: SearchCandidate
+    score: float
+    reasons: tuple[str, ...]
+    artist: str | None
+    track: str
+
+
+@dataclass(frozen=True)
+class ProviderAttempt:
+    """What happened when one search method was tried."""
+
+    provider: SearchProviderName
+    outcome: str  # "ok", "empty", "error" or "skipped"
+    detail: str = ""
+
+
+@dataclass(frozen=True)
+class SearchResponse:
+    """Candidates from the search chain, plus how they were found."""
+
+    candidates: tuple[SearchCandidate, ...]
+    provider: SearchProviderName | None
+    attempts: tuple[ProviderAttempt, ...]
+
+
+@dataclass(frozen=True)
+class SearchResult:
+    """The ranked outcome of a search."""
+
+    query: str
+    best: ScoredCandidate | None
+    alternates: tuple[ScoredCandidate, ...]
+    confidence: float
+    ambiguous: bool
+    provider: SearchProviderName | None = None
+    attempts: tuple[ProviderAttempt, ...] = ()

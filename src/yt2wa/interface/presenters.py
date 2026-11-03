@@ -9,7 +9,7 @@ from enum import Enum
 from pathlib import Path
 from typing import Any, TextIO
 
-from yt2wa.application.dto import VerifyResult
+from yt2wa.application.dto import SearchOutcome, VerifyResult
 from yt2wa.bootstrap.doctor import DoctorCheck
 from yt2wa.domain.errors import DomainError
 from yt2wa.domain.models import (
@@ -26,6 +26,27 @@ _METHOD_TEXT = {
     Method.REMUX: "remuxed, no re-encode",
     Method.TRANSCODE: "re-encoded",
 }
+
+
+def format_clock(seconds: float) -> str:
+    """Return a length such as '3:42' (or '1:02:03')."""
+    total = int(seconds)
+    hours, rest = divmod(total, 3600)
+    minutes, secs = divmod(rest, 60)
+    if hours:
+        return f"{hours}:{minutes:02d}:{secs:02d}"
+    return f"{minutes}:{secs:02d}"
+
+
+def format_count(number: int | None) -> str:
+    """Return a view count such as '612.3M'."""
+    if number is None:
+        return "? views"
+    steps = ((1_000_000_000, "B"), (1_000_000, "M"), (1_000, "K"))
+    for limit, suffix in steps:
+        if number >= limit:
+            return f"{number / limit:.1f}{suffix} views"
+    return f"{number} views"
 
 
 def format_size(size_bytes: int) -> str:
@@ -63,17 +84,30 @@ class ConsolePresenter:
         quiet: bool = False,
         out: TextIO | None = None,
         err: TextIO | None = None,
+        verbose: bool = False,
     ) -> None:
         self._quiet = quiet
         self._out = out or sys.stdout
         self._err = err or sys.stderr
+        self._verbose = verbose
 
     def _say(self, tag: str, text: str) -> None:
         print(f"[{tag}] {text}", file=self._err)
 
+    def note(self, text: str) -> None:
+        """Show a short note about how the options were applied."""
+        if not self._quiet:
+            self._say("note", text)
+
     def result(self, result: ConversionResult, show_report: bool) -> None:
         """Show a finished conversion."""
         print(result.output, file=self._out)
+        self._result_info(result, show_report)
+
+    def _result_info(
+        self, result: ConversionResult, show_report: bool
+    ) -> None:
+        """Show the details of a conversion on stderr."""
         if self._quiet:
             return
         self._say(
@@ -102,6 +136,79 @@ class ConsolePresenter:
         """Show what a run would do."""
         for line in plan.lines:
             print(line, file=self._out)
+
+    def search(self, outcome: SearchOutcome) -> None:
+        """Show the best match, the alternates and any download."""
+        result = outcome.result
+        best = result.best
+        if outcome.conversion is not None:
+            print(outcome.conversion.output, file=self._out)
+        elif best is not None:
+            print(best.candidate.url, file=self._out)
+        if self._quiet or best is None:
+            return
+
+        name = f"{best.artist} - {best.track}" if best.artist else best.track
+        cand = best.candidate
+        provider = result.provider.value if result.provider else "unknown"
+        self._say(
+            "ok",
+            f"Best match (confidence {result.confidence:.2f}) via {provider}",
+        )
+        print(f"       {name}", file=self._err)
+        print(
+            f"       {cand.channel or 'unknown channel'} | "
+            f"{format_clock(cand.duration_s)} | "
+            f"{format_count(cand.view_count)} | {cand.url}",
+            file=self._err,
+        )
+        print(f"       why: {'; '.join(best.reasons)}", file=self._err)
+        if outcome.detail is not None:
+            self._detail(outcome)
+        if result.ambiguous:
+            self._say(
+                "warn",
+                "Several results match about equally well. Use --pick N "
+                "to choose.",
+            )
+        if result.alternates:
+            self._say("info", "Alternates:")
+            for number, alt in enumerate(result.alternates, start=2):
+                who = (
+                    f"{alt.artist} - {alt.track}" if alt.artist else alt.track
+                )
+                print(
+                    f"       {number}. {who}  {alt.score:.2f}  "
+                    f"({alt.candidate.channel or '?'}, "
+                    f"{format_clock(alt.candidate.duration_s)})",
+                    file=self._err,
+                )
+        if self._verbose or len(result.attempts) > 1:
+            tried = ", ".join(
+                f"{a.provider.value} ({a.outcome}"
+                f"{': ' + a.detail if a.detail else ''})"
+                for a in result.attempts
+            )
+            self._say("info", f"Methods tried: {tried}")
+        for note in outcome.notes:
+            self._say("warn", note)
+        if outcome.conversion is not None:
+            self._result_info(outcome.conversion, False)
+
+    def _detail(self, outcome: SearchOutcome) -> None:
+        """Show the extra metadata fetched with --detail."""
+        meta = outcome.detail
+        assert meta is not None
+        rows = [
+            ("track", meta.track),
+            ("artist", meta.artist),
+            ("album", meta.album),
+            ("uploaded", meta.upload_date),
+            ("uploader", meta.uploader),
+        ]
+        for label, value in rows:
+            if value:
+                print(f"       {label}: {value}", file=self._err)
 
     def verify(self, result: VerifyResult) -> None:
         """Show the result of checking a file."""
@@ -165,6 +272,13 @@ class JsonPresenter:
         """Write the dry run plan."""
         self._dump({"plan": plan.lines})
 
+    def note(self, text: str) -> None:
+        """Ignore notes: they are not part of the JSON output."""
+
+    def search(self, outcome: SearchOutcome) -> None:
+        """Write the search outcome."""
+        self._dump(outcome)
+
     def verify(self, result: VerifyResult) -> None:
         """Write the result of checking a file."""
         self._dump(result)
@@ -193,6 +307,8 @@ __all__ = [
     "JsonPresenter",
     "Presenter",
     "Target",
+    "format_clock",
+    "format_count",
     "format_size",
     "to_jsonable",
 ]

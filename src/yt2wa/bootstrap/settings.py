@@ -9,7 +9,7 @@ from pathlib import Path
 
 from yt2wa.domain.errors import ConfigError
 from yt2wa.domain.formats import parse_resolution
-from yt2wa.domain.models import Target
+from yt2wa.domain.models import AudioFormat, SearchProviderName, Target
 
 PREFIX = "YT2WA_"
 
@@ -39,6 +39,17 @@ def _int(env: Mapping[str, str], key: str, default: int) -> int:
         raise ConfigError(f"{PREFIX}{key} must be a number.") from exc
 
 
+def _float(env: Mapping[str, str], key: str, default: float) -> float:
+    """Read a decimal setting."""
+    raw = env.get(PREFIX + key)
+    if raw is None or raw == "":
+        return default
+    try:
+        return float(raw)
+    except ValueError as exc:
+        raise ConfigError(f"{PREFIX}{key} must be a number.") from exc
+
+
 def _path(env: Mapping[str, str], key: str) -> Path | None:
     """Read an optional path setting."""
     raw = env.get(PREFIX + key)
@@ -63,6 +74,12 @@ class Settings:
     cookies_file: Path | None = None
     log_level: str = "INFO"
     log_format: str = "text"
+    search_limit: int = 5
+    search_provider: SearchProviderName | None = None  # None means auto.
+    min_confidence: float = 0.6
+    audio_format: AudioFormat = AudioFormat.M4A
+    audio_bitrate_k: int | None = None
+    audio_profile_file: Path | None = None
 
     @classmethod
     def from_env(
@@ -88,6 +105,28 @@ class Settings:
         if log_format not in ("text", "json"):
             raise ConfigError(f"{PREFIX}LOG_FORMAT must be text or json.")
 
+        provider_name = env.get(PREFIX + "SEARCH_PROVIDER", "auto")
+        try:
+            provider = (
+                None
+                if provider_name == "auto"
+                else SearchProviderName(provider_name)
+            )
+            audio_format = AudioFormat(env.get(PREFIX + "AUDIO_FORMAT", "m4a"))
+        except ValueError as exc:
+            raise ConfigError(
+                f"Invalid {PREFIX}SEARCH_PROVIDER or {PREFIX}AUDIO_FORMAT.",
+                hint="Providers: auto, ytsearch, ytmusic-url, ytmusicapi. "
+                "Audio formats: m4a, mp3.",
+            ) from exc
+        search_limit = _int(env, "SEARCH_LIMIT", 5)
+        if not 1 <= search_limit <= 25:
+            raise ConfigError(f"{PREFIX}SEARCH_LIMIT must be 1 to 25.")
+        min_confidence = _float(env, "MIN_CONFIDENCE", 0.6)
+        if not 0.0 <= min_confidence <= 1.0:
+            raise ConfigError(f"{PREFIX}MIN_CONFIDENCE must be 0 to 1.")
+        audio_bitrate = env.get(PREFIX + "AUDIO_BITRATE_K")
+
         size = env.get(PREFIX + "MAX_SIZE_MB")
         floor = env.get(PREFIX + "MIN_RESOLUTION_FLOOR")
         return cls(
@@ -107,4 +146,12 @@ class Settings:
             cookies_file=_path(env, "COOKIES_FILE"),
             log_level=env.get(PREFIX + "LOG_LEVEL", "INFO").upper(),
             log_format=log_format,
+            search_limit=search_limit,
+            search_provider=provider,
+            min_confidence=min_confidence,
+            audio_format=audio_format,
+            audio_bitrate_k=(
+                _int(env, "AUDIO_BITRATE_K", 128) if audio_bitrate else None
+            ),
+            audio_profile_file=_path(env, "AUDIO_PROFILE_FILE"),
         )

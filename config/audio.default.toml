@@ -1,0 +1,16 @@
+# Audio compatibility profile. These values mirror the built-in defaults.
+# Copy this file and point YT2WA_AUDIO_PROFILE_FILE at it to change them.
+# Keys you leave out keep their built-in value.
+
+[audio]
+sample_rates = [44100, 48000]
+default_sample_rate = 48000
+max_channels = 2
+default_bitrate_k = 128
+# Bitrates to try, highest first, when a file is over the size cap.
+ladder_bitrates_k = [128, 96, 64]
+min_bitrate_k = 48
+# A copied stream may be a little above the requested bitrate.
+bitrate_tolerance = 1.15
+# WhatsApp limits change over time. Verify before relying on this value.
+size_cap_mb = 16

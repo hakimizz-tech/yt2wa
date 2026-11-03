@@ -7,6 +7,11 @@ from dataclasses import replace
 from typing import Any
 
 from yt2wa.bootstrap.settings import Settings
+from yt2wa.domain.audio_profile import (
+    DEFAULT_AUDIO,
+    AudioProfile,
+    audio_profile_from_mapping,
+)
 from yt2wa.domain.errors import ConfigError
 from yt2wa.domain.profile import (
     DEFAULT_PROFILES,
@@ -60,3 +65,27 @@ def _status_defaults() -> dict[str, float]:
         "advisory_aspect": status.advisory_aspect or 0.0,
         "advisory_max_duration_s": status.advisory_max_duration_s or 0.0,
     }
+
+
+def load_audio_profile(settings: Settings) -> AudioProfile:
+    """Return the audio profile, with environment overrides applied."""
+    profile = DEFAULT_AUDIO
+    if settings.audio_profile_file is not None:
+        try:
+            with settings.audio_profile_file.open("rb") as handle:
+                data = tomllib.load(handle)
+        except OSError as exc:
+            raise ConfigError(
+                "Cannot read audio profile file "
+                f"{settings.audio_profile_file}."
+            ) from exc
+        except tomllib.TOMLDecodeError as exc:
+            raise ConfigError(f"Invalid TOML in audio profile: {exc}") from exc
+        profile = audio_profile_from_mapping(data.get("audio", {}))
+
+    overrides: dict[str, Any] = {}
+    if settings.max_size_mb is not None:
+        overrides["size_cap_mb"] = settings.max_size_mb
+    if settings.audio_bitrate_k is not None:
+        overrides["default_bitrate_k"] = settings.audio_bitrate_k
+    return replace(profile, **overrides) if overrides else profile
