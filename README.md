@@ -87,8 +87,17 @@ method yourself turns the fallback off.
 | `chat`     | Send to a person or group    | Only when the file needs it |
 | `status`   | Post as a WhatsApp Status    | Only when the file needs it |
 
-Audio (`-x`) works with `original` and `chat`. Status needs a picture, so
-`-x -t status` is an error.
+For a dedicated audio workflow, use the `audio` command:
+
+```bash
+yt2wa audio "https://youtu.be/VIDEO_ID"
+yt2wa audio "https://youtu.be/VIDEO_ID" --keep-original
+yt2wa audio "https://youtu.be/VIDEO_ID" --format mp3 --bitrate 96
+```
+
+The existing `convert -x/--audio` form remains supported as an alias. Audio
+works with `original` and `chat`; the dedicated `audio` command does not offer
+video resolution or the invalid `status` target.
 
 `-r/--resolution` accepts `144, 240, 360, 480, 720, 1080, best`. The number
 is the short edge, so `1080` means 1920x1080 or 1080x1920. Output is never

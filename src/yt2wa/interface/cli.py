@@ -38,7 +38,7 @@ from yt2wa.interface.presenters import (
 )
 from yt2wa.interface.progress import ConsoleProgress
 
-COMMANDS = ("convert", "search", "verify", "doctor", "clean")
+COMMANDS = ("convert", "audio", "search", "verify", "doctor", "clean")
 AUDIO_BITRATES = (64, 96, 128, 192)
 
 NOTICE = (
@@ -115,6 +115,68 @@ def _add_download_options(parser: argparse.ArgumentParser) -> None:
     )
 
 
+def _add_audio_options(parser: argparse.ArgumentParser) -> None:
+    """Add options for the dedicated audio command."""
+    parser.add_argument(
+        "-t",
+        "--target",
+        choices=[Target.ORIGINAL.value, Target.CHAT.value],
+        help="output intent (default: chat)",
+    )
+    parser.add_argument(
+        "--keep-original",
+        dest="target",
+        action="store_const",
+        const=Target.ORIGINAL.value,
+        help="same as --target original",
+    )
+    parser.add_argument(
+        "--format",
+        dest="audio_format",
+        choices=[f.value for f in AudioFormat],
+        help="audio format for sharing (default: m4a)",
+    )
+    parser.add_argument(
+        "--bitrate",
+        dest="audio_bitrate",
+        type=int,
+        choices=AUDIO_BITRATES,
+        metavar="{64,96,128,192}",
+        help="audio bitrate in kbit/s for sharing (default: 128)",
+    )
+    parser.add_argument(
+        "-o",
+        "--output-dir",
+        type=Path,
+        help="where to save the result (default: ./out)",
+    )
+    parser.add_argument(
+        "--max-size",
+        type=int,
+        metavar="MB",
+        help="size cap for sharing (0 means no cap)",
+    )
+    parser.add_argument(
+        "--keep-source",
+        action="store_true",
+        help="keep the downloaded source file",
+    )
+    parser.add_argument(
+        "--report",
+        action="store_true",
+        help="print the compliance report",
+    )
+    parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="show the plan and ffmpeg argv only",
+    )
+    parser.set_defaults(
+        audio=True,
+        resolution=None,
+    )
+
+
 def build_parser() -> argparse.ArgumentParser:
     """Create the argument parser."""
     common = argparse.ArgumentParser(add_help=False)
@@ -145,6 +207,14 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="show the plan and ffmpeg argv only",
     )
+
+    audio = sub.add_parser(
+        "audio",
+        parents=[common],
+        help="download and convert audio",
+    )
+    audio.add_argument("url", help="YouTube video or Short link")
+    _add_audio_options(audio)
 
     search = sub.add_parser(
         "search",
@@ -407,6 +477,7 @@ def _clean(
 
 _HANDLERS = {
     "convert": _convert,
+    "audio": _convert,
     "search": _search,
     "verify": _verify,
     "doctor": _doctor,

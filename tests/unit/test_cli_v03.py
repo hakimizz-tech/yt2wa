@@ -69,6 +69,32 @@ def test_audio_flags_parse():
     )
 
 
+def test_audio_command_maps_to_the_existing_audio_options():
+    args = parse(
+        "audio",
+        URL,
+        "--keep-original",
+        "--format",
+        "mp3",
+        "--bitrate",
+        "96",
+        "--dry-run",
+    )
+    assert args.command == "audio"
+    assert args.audio
+    assert args.target == "original"
+    assert args.audio_format == "mp3"
+    assert args.audio_bitrate == 96
+    assert args.dry_run
+
+
+def test_audio_command_does_not_offer_video_only_options():
+    with pytest.raises(SystemExit):
+        parse("audio", URL, "--resolution", "480")
+    with pytest.raises(SystemExit):
+        parse("audio", URL, "--target", "status")
+
+
 def test_search_flags_parse():
     args = parse(
         *["search", "daft", "punk", "--type", "music"],

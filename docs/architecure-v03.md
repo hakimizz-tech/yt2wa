@@ -287,6 +287,12 @@ yt2wa convert <url> [existing options]
           --audio-format {m4a,mp3}    For --target chat       [default: m4a]
           --audio-bitrate {64,96,128,192}                     [default: 128]
 
+yt2wa audio <url> [options]
+      --keep-original                Keep the source audio as served
+      --format {m4a,mp3}             Audio format for sharing [default: m4a]
+      --bitrate {64,96,128,192}      Audio bitrate             [default: 128]
+      --dry-run                      Show the plan and ffmpeg argv only
+
 yt2wa search <query> [options]
       --type {any,video,music}        What to look for        [default: any]
       --provider {auto,ytsearch,ytmusic-url,ytmusicapi}
@@ -303,6 +309,8 @@ yt2wa search <query> [options]
 
 **Rules**
 - `--audio` with `--target status` is an error (exit 2).
+- `audio` is a thin alias for `convert --audio`; it does not offer
+  `--resolution` or `--target status`.
 - `--resolution` is ignored for audio, with a one line note.
 - `--audio-format` and `--audio-bitrate` apply only to `chat`. With `original` they are ignored with a note, because original means "as is".
 - `--pick`, `--min-confidence` and the convert options without `--download` are a usage error (exit 2), so flags never silently do nothing.
