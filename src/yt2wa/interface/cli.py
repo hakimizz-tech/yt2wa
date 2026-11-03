@@ -108,7 +108,11 @@ def _add_download_options(parser: argparse.ArgumentParser) -> None:
         metavar="MB",
         help="size cap for chat/status (0 means no cap)",
     )
-    parser.add_argument("--keep-source", action="store_true")
+    parser.add_argument(
+        "--keep-source",
+        action="store_true",
+        help="keep the downloaded source file",
+    )
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -136,7 +140,11 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="print the compliance report",
     )
-    convert.add_argument("--dry-run", action="store_true")
+    convert.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="show the plan and ffmpeg argv only",
+    )
 
     search = sub.add_parser(
         "search",
