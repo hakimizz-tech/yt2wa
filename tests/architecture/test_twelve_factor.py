@@ -19,7 +19,7 @@ def source_files():
 
 
 def rel(path):
-    return str(path.relative_to(SRC))
+    return path.relative_to(SRC).as_posix()
 
 
 # ---- II. Dependencies -------------------------------------------------------
